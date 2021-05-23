@@ -93,86 +93,8 @@ int displaySMTick(int state) {
 	PORTB = output;
 	return state;
 }*/
-enum combinations { start, init, key, right, wrong, lock } combination;
-unsigned char keyUnlocker[] = { '#', '1', '2', '3', '4', '5' };
-int countKey = 0;
-int unlock(int state) {
-	unsigned char y = GetKeypadKey();
-	unsigned char button = ~PINB & 0x80;
-	switch(state){
-		case start:
-			state = init;
-		break;
-		case init://#
-			if(y == '#') {
-				state = right;
-				countKey ++;
-			} else if((~PINB & 0x80) == 0x80){
-				state = lock;	
-			} else {
-				state = init;
-			}
-		break;
-		case right://1, 2, 3, 4, 5
-			if(y == keyUnlocker[countKey]) {
-				state = wrong;
-				countKey++;
-				if(countKey == 6){
-					state = key;
-				}
-			} else if(y == '\0') {
-				state = right;	
-			} else if((~PINB & 0x80) == 0x80) {
-				state = lock;	
-			} else {
-				state = init;
-				countKey = 0;
-			}	
-		break;
-		case wrong:
-			if(y == '\0'){
-				state = right;
-			} else {
-				state = wrong;
-			}
-		break;
-		case key:
-			if((~PINB & 0x80) == 0x80){
-				state = lock;
-			} else {
-				state = key;
-			}
-		break;
-		case lock:
-			countKey = 0;
-			state = init;
-		break;
-		default:
-		break;
-	}
-	switch(state){
-		case init:
-			//PORTB = countKey;
-		break;
-		case wrong:
-			//PORTB = countKey;
-		break;
-		case right:
-			//PORTB = countKey;
-		break;
-		case key:
-			PORTB = 0x01;
-		break;
-		case lock:
-			PORTB = 0x00;
-		break;
-		default:
-		break;
-	}
 
-	return state;
-}
-//enum displays { start, init } display;
+enum displays { start, init } display;
 int tick(int state){
 	unsigned char x = GetKeypadKey();
 	switch(state) {
@@ -227,7 +149,7 @@ int tick(int state){
 int main(void) {
     /* Insert DDR and PORT initializations */
 	DDRA = 0x00; PORTA = 0xFF;
-	DDRB = 0x7F; PORTB = 0x80;
+	DDRB = 0xFF; PORTB = 0x00;
 	DDRC = 0xF0; PORTC = 0x0F;
     /* Insert your solution below */
 	static task task1;// task2, task3, task4;
@@ -237,7 +159,7 @@ int main(void) {
 	task1.state = start;
 	task1.period = 50;
 	task1.elapsedTime = task1.period;
-	task1.TickFct = &unlock;
+	task1.TickFct = &tick;
 
 	/*task2.state = start;
         task2.period = 500;

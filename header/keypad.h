@@ -24,12 +24,12 @@ unsigned char GetKeypadKey(){
         if(GetBit(PINC, 2) == 0) { return('9'); }
         if(GetBit(PINC, 3) == 0) { return('#'); }
 
-        /*PORTC = 0xAF;
+        PORTC = 0x7F;
         asm("nop");
         if(GetBit(PINC, 0) == 0) { return('A'); }
         if(GetBit(PINC, 1) == 0) { return('B'); }
         if(GetBit(PINC, 2) == 0) { return('C'); }
-        if(GetBit(PINC, 3) == 0) { return('D'); }*/
+        if(GetBit(PINC, 3) == 0) { return('D'); }
 
         return('\0');
 }
